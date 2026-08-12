@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>HH Goa 2026 — Shoreline PFP Poster Generator</title>
+  <meta name="description" content="Generate your official HH Goa 2026 branded X profile picture. Bold Shoreline Poster style. Client-side, zero signup. #FrameInGoa">
+  
+  <!-- Open Graph Tags -->
+  <meta property="og:title" content="HH Goa 2026 Shoreline PFP Generator">
+  <meta property="og:description" content="Frame your photo for HH Goa 2026 hackathon with bold poster typography and share on X with #FrameInGoa!">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts: Anton (Display) + Manrope (Body) + JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@500;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- heic2any for iPhone HEIC support -->
+  <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-notification" id="toast">
+    <i class="fa-solid fa-circle-check"></i>
+    <span id="toastText">Avatar downloaded & copied to clipboard!</span>
+  </div>
+
+  <!-- Webcam Selfie Live Camera Modal -->
+  <div class="webcam-modal" id="webcamModal">
+    <div class="webcam-card">
+      <div class="webcam-header">
+        <h3><i class="fa-solid fa-camera"></i> Live Selfie Camera</h3>
+        <button class="close-btn" id="closeWebcam"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="webcam-view">
+        <video id="webcamVideo" autoplay playsinline muted></video>
+      </div>
+      <div class="webcam-actions">
+        <button type="button" class="btn btn--primary" id="btnSnapPhoto">
+          <i class="fa-solid fa-circle-dot"></i> Snap Photo
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Share to X Live Tweet Preview Modal -->
+  <div class="share-modal" id="shareModal">
+    <div class="share-card">
+      <div class="share-header">
+        <h3><i class="fa-brands fa-x-twitter"></i> Share to X (#FrameInGoa)</h3>
+        <button class="close-btn" id="closeShareModal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="share-body">
+        <div class="tweet-preview-card">
+          <div class="tweet-user">
+            <div class="tweet-avatar-placeholder"><i class="fa-solid fa-user"></i></div>
+            <div class="tweet-user-info">
+              <span class="tweet-name">You (Builder)</span>
+              <span class="tweet-handle">@builder &bull; Now</span>
+            </div>
+          </div>
+          <p class="tweet-text" id="tweetTextPreview">Heading to #HHGoa2026 🌊⚡ Can't wait to build with everyone in Goa! Check out my official frame avatar #FrameInGoa</p>
+          <div class="tweet-media-preview">
+            <img id="shareModalImg" src="" alt="Generated Avatar Preview">
+          </div>
+        </div>
+
+        <div class="share-instructions-banner">
+          <p><i class="fa-solid fa-circle-info"></i> <b>Your avatar PNG is ready!</b> Image is copied to your clipboard & saved to downloads. Simply click below to open X and press <b>Ctrl + V</b> to attach!</p>
+        </div>
+
+        <div class="share-modal-actions">
+          <button type="button" class="btn btn--primary" id="modalBtnCopyImage">
+            <i class="fa-solid fa-copy"></i> Re-Copy Image
+          </button>
+          <button type="button" class="btn btn--x" id="modalBtnOpenX">
+            <i class="fa-brands fa-x-twitter"></i> Launch X & Paste (Ctrl + V)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header Banner -->
+  <header class="poster-hero-header">
+    <div class="poster-hero__topbar">
+      <div class="brand-badge">
+        <i class="fa-solid fa-code"></i> HH GOA '26
+      </div>
+      <div class="poster-hero__caption">
+        OFFICIAL BUILDER AVATAR FRAME &bull; GOA INDIA &bull; <span class="chip">#FrameInGoa</span>
+      </div>
+    </div>
+
+    <!-- Giant Stacked Display Type -->
+    <h1 class="poster-hero__title">
+      <span>HH GOA</span>
+      <span class="accent">2026</span>
+    </h1>
+  </header>
+
+  <!-- Main Unified Workspace Grid (Side-by-side sticky canvas & controls) -->
+  <main class="main-workspace">
+    <div class="wrap-workspace">
+      
+      <!-- LEFT COLUMN: Sticky Canvas Preview & Image Editing Controls -->
+      <div class="stage-column">
+        <div class="sticky-stage-wrapper">
+          
+          <div class="photo-window" id="canvasContainer">
+            
+            <!-- Empty State Dropzone -->
+            <div class="upload-dropzone" id="dropzone">
+              <div class="dropzone-content">
+                <div class="upload-icon-ring">
+                  <i class="fa-solid fa-cloud-arrow-up"></i>
+                </div>
+                <strong>DROP YOUR PHOTO HERE</strong>
+                <p>Supports JPG, PNG, HEIC (iPhone)</p>
+                
+                <div class="upload-buttons">
+                  <button type="button" class="btn btn--primary" id="btnBrowse">
+                    <i class="fa-solid fa-image"></i> Choose Photo
+                  </button>
+                  <button type="button" class="btn btn--secondary" id="btnCamera">
+                    <i class="fa-solid fa-camera"></i> Take Selfie
+                  </button>
+                </div>
+
+                <div class="sample-photos-strip">
+                  <span>Or try demo photo:</span>
+                  <div class="sample-avatars">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80" alt="Demo 1" class="sample-thumb" data-url="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=80">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80" alt="Demo 2" class="sample-thumb" data-url="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&auto=format&fit=crop&q=80">
+                    <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&auto=format&fit=crop&q=80" alt="Demo 3" class="sample-thumb" data-url="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=800&auto=format&fit=crop&q=80">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- The Main Interactive Canvas -->
+            <canvas id="pfpCanvas" width="1200" height="1200"></canvas>
+
+            <!-- Processing Overlay -->
+            <div class="loading-overlay" id="loadingOverlay">
+              <div class="spinner"></div>
+              <span id="loadingText">Processing photo...</span>
+            </div>
+
+            <!-- Gesture Hint Overlay -->
+            <div class="canvas-gesture-hint" id="gestureHint">
+              <i class="fa-solid fa-up-down-left-right"></i> Drag to Move &bull; Pinch / Scroll to Zoom
+            </div>
+
+          </div>
+
+          <!-- Position & Zoom Toolbar directly below Canvas -->
+          <div class="controls-toolbar" id="controlsToolbar">
+            <div class="zoom-controls">
+              <button class="tool-btn" id="btnZoomOut" title="Zoom Out"><i class="fa-solid fa-minus"></i></button>
+              <input type="range" id="zoomSlider" min="0.2" max="3.0" step="0.01" value="1.0" class="range-slider">
+              <button class="tool-btn" id="btnZoomIn" title="Zoom In"><i class="fa-solid fa-plus"></i></button>
+            </div>
+            <div class="tool-actions">
+              <button class="tool-btn" id="btnRotate" title="Rotate 90°"><i class="fa-solid fa-rotate-right"></i></button>
+              <button class="tool-btn" id="btnReset" title="Reset"><i class="fa-solid fa-arrow-rotate-left"></i> Reset</button>
+              <button class="tool-btn tool-btn-change" id="btnChangePhoto" title="Change Photo"><i class="fa-solid fa-arrows-rotate"></i> Change</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: Realtime Styling Controls & Action Buttons -->
+      <div class="controls-column">
+        
+        <!-- Theme Selection -->
+        <div class="panel-card">
+          <h3 class="panel-title"><i class="fa-solid fa-palette"></i> Poster Color Theme</h3>
+          <div class="frame-themes-grid">
+            <button class="theme-card active" data-theme="sunset">
+              <div class="theme-preview theme-sunset"></div>
+              <span>Field Orange</span>
+            </button>
+            <button class="theme-card" data-theme="lagoon">
+              <div class="theme-preview theme-lagoon"></div>
+              <span>Ocean Navy</span>
+            </button>
+            <button class="theme-card" data-theme="neon">
+              <div class="theme-preview theme-neon"></div>
+              <span>Hibiscus Pink</span>
+            </button>
+            <button class="theme-card" data-theme="retro">
+              <div class="theme-preview theme-retro"></div>
+              <span>Sand Beige</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Builder Stamp Selection -->
+        <div class="panel-card">
+          <h3 class="panel-title"><i class="fa-solid fa-certificate"></i> Builder Stamp</h3>
+          <div class="badge-selector">
+            <button class="badge-btn active" data-badge="BUILDER"><i class="fa-solid fa-laptop-code"></i> BUILDER</button>
+            <button class="badge-btn" data-badge="HACKER"><i class="fa-solid fa-terminal"></i> HACKER</button>
+            <button class="badge-btn" data-badge="CREATOR"><i class="fa-solid fa-wand-magic-sparkles"></i> CREATOR</button>
+            <button class="badge-btn" data-badge="NONE">NONE</button>
+          </div>
+        </div>
+
+        <!-- Action Stack -->
+        <div class="action-card">
+          <button type="button" class="btn btn--primary btn-action" id="btnDownload">
+            <i class="fa-solid fa-download"></i> Download Avatar PNG
+          </button>
+
+          <button type="button" class="btn btn--x btn-action" id="btnShareX">
+            <i class="fa-brands fa-x-twitter"></i> Share to X (#FrameInGoa)
+          </button>
+
+          <div class="share-instructions-box">
+            <h4><i class="fa-solid fa-bolt"></i> Direct Sharing Options:</h4>
+            <p>📋 <b>Desktop (Ctrl + V)</b>: Clicking Share to X copies the actual PNG image to your clipboard! Press <b>Ctrl+V</b> inside the tweet box to paste your avatar directly.</p>
+            <p>📱 <b>Mobile</b>: Opens your native device share sheet — select X (Twitter) to post with the avatar image file attached!</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Statement Split Line Footer Banner -->
+  <div class="statement-banner">
+    <div class="wrap">
+      <div class="statement">
+        <div class="left">SHORELINE POSTER EDITION</div>
+        <div class="right">BUILT FOR BUILDERS</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden File Inputs -->
+  <input type="file" id="fileInput" accept="image/jpeg,image/png,image/heic,image/heif,.heic,.heif" hidden>
+  <input type="file" id="cameraInput" accept="image/*" capture="user" hidden>
+
+  <!-- Mobile Sticky Bar -->
+  <div class="mobile-sticky-bar" id="mobileStickyBar">
+    <button class="btn btn--primary btn-sm" id="btnDownloadMobile">
+      <i class="fa-solid fa-download"></i> Download
+    </button>
+    <button class="btn btn--x btn-sm" id="btnShareXMobile">
+      <i class="fa-brands fa-x-twitter"></i> Share to X
+    </button>
+  </div>
+
+  <footer class="site-footer">
+    <p>Official PFP Frame Tool for <strong>HH Goa 2026</strong> &bull; Client-side & Private &bull; Made for Builders 🌊</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

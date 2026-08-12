@@ -1,0 +1,21 @@
+{
+  "name": "hh-goa-2026-pfp-generator",
+  "version": "1.0.0",
+  "description": "HH Goa 2026 Official PFP Frame Generator web application for Twitter / X profile pictures.",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx http-server . -p 8080",
+    "start": "npx http-server . -p 8080",
+    "build": "echo 'Static build complete'"
+  },
+  "keywords": [
+    "hh-goa-2026",
+    "pfp-generator",
+    "hackathon",
+    "twitter-frame",
+    "canvas",
+    "vercel"
+  ],
+  "author": "HH Goa 2026 Builders",
+  "license": "MIT"
+}
