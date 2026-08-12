@@ -5,8 +5,7 @@
   "main": "index.html",
   "scripts": {
     "dev": "npx http-server . -p 8080",
-    "start": "npx http-server . -p 8080",
-    "build": "echo 'Static build complete'"
+    "start": "npx http-server . -p 8080"
   },
   "keywords": [
     "hh-goa-2026",

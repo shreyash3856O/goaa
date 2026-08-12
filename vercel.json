@@ -1,12 +1,7 @@
 {
   "version": 2,
+  "outputDirectory": ".",
   "cleanUrls": true,
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    }
-  ],
   "headers": [
     {
       "source": "/(.*)",
